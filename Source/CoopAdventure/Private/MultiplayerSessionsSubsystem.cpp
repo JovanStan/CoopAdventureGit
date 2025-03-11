@@ -1,21 +1,36 @@
 
 #include "MultiplayerSessionsSubsystem.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSubsystemUtils.h"
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
-	PrintString("Constructor");
+	
 }
 
 void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	PrintString("Initialization");
+
+	//return online subsystem
+	IOnlineSubsystem* onlineSubsystem = Online::GetSubsystem(GetWorld());
+	if (onlineSubsystem)
+	{
+		PrintString(onlineSubsystem->GetSubsystemName().ToString());
+
+		//get session interface from onlineSubsystem (steam)
+		sessionInterface = onlineSubsystem->GetSessionInterface();
+		if (sessionInterface.IsValid())
+		{
+			PrintString("Session Interface is Valid");
+		}
+	}
 }
 
 void UMultiplayerSessionsSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
-	PrintString("Deinitialization");
+	
 }
 
 void UMultiplayerSessionsSubsystem::PrintString(const FString& String)

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
@@ -12,11 +13,12 @@ class COOPADVENTURE_API UMultiplayerSessionsSubsystem : public UGameInstanceSubs
 
 public:
 	UMultiplayerSessionsSubsystem();
+	void static PrintString(const FString& String);
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-private:
-	void PrintString(const FString& String);
+public:
+	TWeakPtr<IOnlineSession> sessionInterface;
 };
