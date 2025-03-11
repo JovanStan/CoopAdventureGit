@@ -30,7 +30,6 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 void UMultiplayerSessionsSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
-	
 }
 
 void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
@@ -39,4 +38,14 @@ void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, String);
 	}
+}
+
+void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
+{
+	PrintString("Creating Server");
+}
+
+void UMultiplayerSessionsSubsystem::FindServer(const FString& serverName)
+{
+	PrintString("Finding Server");
 }

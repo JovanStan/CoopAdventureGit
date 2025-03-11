@@ -15,6 +15,12 @@ public:
 	UMultiplayerSessionsSubsystem();
 	void static PrintString(const FString& String);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateServer(const FString& serverName);
+
+	UFUNCTION(BlueprintCallable)
+	void FindServer(const FString& serverName);
+
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
