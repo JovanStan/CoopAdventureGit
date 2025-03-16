@@ -18,13 +18,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateServer(const FString& serverName);
-	
 	UFUNCTION(BlueprintCallable)
 	void FindServer(const FString& serverName);
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+
+	//this function is bind to OnCreateSessionCompleteDelegates
+	void OnCreateSessionComplete(FName sessionName, bool bWasSuccessful);
 
 public:
 	IOnlineSessionPtr sessionInterface;

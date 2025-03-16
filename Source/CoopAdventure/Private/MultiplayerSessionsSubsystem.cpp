@@ -6,7 +6,7 @@
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
-	
+	onlineSubsystem = Online::GetSubsystem(UObject::GetWorld());
 }
 
 void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -14,16 +14,13 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 	Super::Initialize(Collection);
 
 	//return online subsystem
-	onlineSubsystem = Online::GetSubsystem(GetWorld());
 	if (onlineSubsystem)
 	{
-		PrintString(onlineSubsystem->GetSubsystemName().ToString());
-
 		//get session interface from onlineSubsystem (steam)
 		sessionInterface = onlineSubsystem->GetSessionInterface();
 		if (sessionInterface.IsValid())
 		{
-			PrintString("Session Interface is Valid");
+			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerSessionsSubsystem::OnCreateSessionComplete);
 		}
 	}
 }
@@ -31,6 +28,16 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 void UMultiplayerSessionsSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
+}
+
+//this is fired when we call create session from CreateServer function
+void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName sessionName, bool bWasSuccessful)
+{
+	PrintString("Session Created successful");
+	if (bWasSuccessful)
+	{
+		GetWorld()->ServerTravel("/Game/thirdPerson/maps/ThirdPersonMap?listen");
+	}
 }
 
 void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
@@ -41,6 +48,7 @@ void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
 	}
 }
 
+// UFUNCTION
 void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 {
 	PrintString("Creating Server");
@@ -71,6 +79,7 @@ void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 	sessionInterface->CreateSession(0, sessionName, sessionSettings);
 }
 
+// UFUNCTION
 void UMultiplayerSessionsSubsystem::FindServer(const FString& serverName)
 {
 	PrintString("Finding Server");
