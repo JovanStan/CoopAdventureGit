@@ -28,7 +28,13 @@ protected:
 	//this function is bind to OnCreateSessionCompleteDelegates
 	void OnCreateSessionComplete(FName sessionName, bool bWasSuccessful);
 
+	//this function is bind to OnDestroySessionCompleteDelegates
+	void OnDestroySessionComplete(FName sessionName, bool bWasSuccessful);
+
 public:
 	IOnlineSessionPtr sessionInterface;
 	IOnlineSubsystem* onlineSubsystem;
+
+	bool createServerAfterDestroyed;
+	FString destroyServerName;
 };

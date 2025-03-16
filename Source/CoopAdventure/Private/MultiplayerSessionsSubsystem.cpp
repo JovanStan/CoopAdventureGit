@@ -7,6 +7,8 @@
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
 	onlineSubsystem = Online::GetSubsystem(UObject::GetWorld());
+
+	createServerAfterDestroyed = false;
 }
 
 void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -21,6 +23,7 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 		if (sessionInterface.IsValid())
 		{
 			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerSessionsSubsystem::OnCreateSessionComplete);
+			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerSessionsSubsystem::OnDestroySessionComplete);
 		}
 	}
 }
@@ -40,11 +43,12 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName sessionName, b
 	}
 }
 
-void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
+void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName sessionName, bool bWasSuccessful)
 {
-	if (GEngine)
+	if (createServerAfterDestroyed)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, String);
+		createServerAfterDestroyed = false;
+		CreateServer(destroyServerName);
 	}
 }
 
@@ -59,8 +63,17 @@ void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 	}
 
 	FName sessionName = FName("Coop Adventure");
-	FOnlineSessionSettings sessionSettings;
 
+	FNamedOnlineSession* existingSession = sessionInterface->GetNamedSession(sessionName);
+	if (existingSession)
+	{
+		createServerAfterDestroyed = true;
+		destroyServerName = serverName;
+		sessionInterface->DestroySession(sessionName);
+		return;
+	}
+	
+	FOnlineSessionSettings sessionSettings;
 	sessionSettings.bAllowJoinInProgress = true;
 	sessionSettings.bIsDedicated = false;
 	sessionSettings.bShouldAdvertise = true;
@@ -83,4 +96,13 @@ void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 void UMultiplayerSessionsSubsystem::FindServer(const FString& serverName)
 {
 	PrintString("Finding Server");
+}
+
+
+void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, String);
+	}
 }
