@@ -2,6 +2,7 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemUtils.h"
+#include "OnlineSessionSettings.h"
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
@@ -13,7 +14,7 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
 	Super::Initialize(Collection);
 
 	//return online subsystem
-	IOnlineSubsystem* onlineSubsystem = Online::GetSubsystem(GetWorld());
+	onlineSubsystem = Online::GetSubsystem(GetWorld());
 	if (onlineSubsystem)
 	{
 		PrintString(onlineSubsystem->GetSubsystemName().ToString());
@@ -43,6 +44,31 @@ void UMultiplayerSessionsSubsystem::PrintString(const FString& String)
 void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 {
 	PrintString("Creating Server");
+	if (serverName.IsEmpty())
+	{
+		PrintString("Server Name is Empty");
+		return;
+	}
+
+	FName sessionName = FName("Coop Adventure");
+	FOnlineSessionSettings sessionSettings;
+
+	sessionSettings.bAllowJoinInProgress = true;
+	sessionSettings.bIsDedicated = false;
+	sessionSettings.bShouldAdvertise = true;
+	sessionSettings.NumPublicConnections = 2;
+	sessionSettings.bUseLobbiesIfAvailable = true;
+	sessionSettings.bUsesPresence = true;
+	sessionSettings.bAllowJoinViaPresence = true;
+
+	bool bIsLan = false;
+	if (onlineSubsystem->GetSubsystemName() == "NULL")
+	{
+		bIsLan = true;
+	}
+	sessionSettings.bIsLANMatch = bIsLan;
+	
+	sessionInterface->CreateSession(0, sessionName, sessionSettings);
 }
 
 void UMultiplayerSessionsSubsystem::FindServer(const FString& serverName)

@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "OnlineSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 UCLASS()
@@ -17,7 +18,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateServer(const FString& serverName);
-
+	
 	UFUNCTION(BlueprintCallable)
 	void FindServer(const FString& serverName);
 
@@ -26,5 +27,6 @@ protected:
 	virtual void Deinitialize() override;
 
 public:
-	TWeakPtr<IOnlineSession> sessionInterface;
+	IOnlineSessionPtr sessionInterface;
+	IOnlineSubsystem* onlineSubsystem;
 };
