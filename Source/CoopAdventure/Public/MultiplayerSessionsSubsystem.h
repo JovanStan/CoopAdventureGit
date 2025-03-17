@@ -56,4 +56,7 @@ public:
 	FString destroyServerName;
 	FString serverNameToFind;
 	FName sessionName;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString mapPath;
 };
