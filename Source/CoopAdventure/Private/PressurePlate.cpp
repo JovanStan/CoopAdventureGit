@@ -29,13 +29,6 @@ APressurePlate::APressurePlate()
 	mesh->SetupAttachment(root);
 	mesh->SetIsReplicated(true);
 
-	/*auto meshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("Game/Stylized_Egypt/Meshes/building/SM_block_02.SM_block_02"));
-	if (meshAsset.Succeeded())
-	{
-		mesh->SetStaticMesh(meshAsset.Object);
-		mesh->SetRelativeScale3D(FVector(4.f, 4.f, 0.5f));
-		mesh->SetRelativeLocation(FVector(0.0f, 0.0f, 7.2f));
-	}*/
 }
 
 void APressurePlate::BeginPlay()
@@ -50,5 +43,38 @@ void APressurePlate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (HasAuthority())
+	{
+		AActor* overlappingActor = 0;
+		
+		TArray<AActor*> overlappingActors;
+		triggerMesh->GetOverlappingActors(overlappingActors);
+
+		for (int i = 0; i < overlappingActors.Num(); i++)
+		{
+			if (overlappingActors[i]->ActorHasTag("Player"))
+			{
+				overlappingActor = overlappingActors[i];
+				break;
+			}
+		}
+		if (overlappingActor)
+		{
+			if (!bIsActivated)
+			{
+				bIsActivated = true;
+				OnActivated.Broadcast();
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Activated");
+			}
+		}else
+		{
+			if (bIsActivated)
+			{
+				bIsActivated = false;
+				OnDeactivated.Broadcast();
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Not Activated");
+			}
+		}
+	}
 }
 
