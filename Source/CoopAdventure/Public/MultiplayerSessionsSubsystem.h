@@ -5,11 +5,11 @@
 #include "OnlineSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "OnlineSubsystem.h"
-#include "OnlineSubsystemUtils.h"
 #include "OnlineSessionSettings.h"
-#include "Online/OnlineSessionNames.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerCreateDelegate, bool, wasSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerJoinDelegate, bool, wasSuccessful);
 
 UCLASS()
 class COOPADVENTURE_API UMultiplayerSessionsSubsystem : public UGameInstanceSubsystem
@@ -40,6 +40,12 @@ protected:
 
 	//this function is bind to OnJoinSessionsCompleteDelegates
 	void OnJoinSessionComplete(FName _sessionName, EOnJoinSessionCompleteResult::Type result);
+
+	UPROPERTY(BlueprintAssignable)
+	FServerCreateDelegate serverCreateDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FServerJoinDelegate serverJoinDelegate;
 
 public:
 	IOnlineSessionPtr sessionInterface;

@@ -3,7 +3,6 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSessionSettings.h"
-#include "Online/OnlineSessionNames.h"
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 {
@@ -42,6 +41,7 @@ void UMultiplayerSessionsSubsystem::Deinitialize()
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName _sessionName, bool bWasSuccessful)
 {
 	PrintString("Session Created successful");
+	serverCreateDelegate.Broadcast(bWasSuccessful);
 	if (bWasSuccessful)
 	{
 		GetWorld()->ServerTravel("/Game/thirdPerson/maps/ThirdPersonMap?listen");
@@ -65,6 +65,7 @@ void UMultiplayerSessionsSubsystem::CreateServer(const FString& serverName)
 	if (serverName.IsEmpty())
 	{
 		PrintString("Server Name is Empty");
+		serverCreateDelegate.Broadcast(false);
 		return;
 	}
 
@@ -105,6 +106,7 @@ void UMultiplayerSessionsSubsystem::FindServer(const FString& serverName)
 	if (serverName.IsEmpty())
 	{
 		PrintString("Server Name is Empty");
+		serverJoinDelegate.Broadcast(false);
 		return;
 	}
 
@@ -151,12 +153,19 @@ void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 		if (correctResult)
 		{
 			sessionInterface->JoinSession(0, sessionName, *correctResult);
+		}else
+		{
+			serverJoinDelegate.Broadcast(false);
 		}
+	}else
+	{
+		serverJoinDelegate.Broadcast(false);
 	}
 }
 
 void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName _sessionName, EOnJoinSessionCompleteResult::Type result)
 {
+	serverJoinDelegate.Broadcast(result == EOnJoinSessionCompleteResult::Success);
 	if (result == EOnJoinSessionCompleteResult::Success)
 	{
 		FString address = "";
