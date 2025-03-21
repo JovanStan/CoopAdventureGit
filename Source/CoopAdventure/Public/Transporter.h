@@ -18,6 +18,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnPressurePlateActivated();
+	UFUNCTION()
+	void OnPressurePlateDeactivated();
+
 private:
 	FVector startPoint;
 	FVector endPoint;
@@ -27,13 +32,7 @@ private:
 	float moveTime;
 
 	UPROPERTY(EditAnywhere)
-	TArray<AActor*> triggerActors;
-
-	UPROPERTY(VisibleAnywhere)
-	int activatedTriggerCount;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
-	bool bAllTriggerActorsTriggered;
+	AActor* triggerActor;
 
 	UFUNCTION()
 	void SetPoints(FVector point1, FVector point2);

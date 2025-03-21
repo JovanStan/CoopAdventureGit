@@ -17,14 +17,14 @@ public:
 	APressurePlate();
 	virtual void Tick(float DeltaTime) override;
 
-
-protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(BlueprintAssignable)
 	FPressurePlateOnActivated OnActivated;
 	UPROPERTY(BlueprintAssignable)
 	FPressurePlateOnDeactivated OnDeactivated;
+
+
+protected:
+	virtual void BeginPlay() override;
 	
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
