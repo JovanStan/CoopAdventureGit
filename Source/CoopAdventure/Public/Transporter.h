@@ -16,6 +16,9 @@ public:
 	UTransporter();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetPoints(FVector point1, FVector point2);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -41,6 +44,4 @@ private:
 	UPROPERTY()
 	AActor* owner;
 
-	UFUNCTION(BlueprintCallable)
-	void SetPoints(FVector point1, FVector point2);
 };
