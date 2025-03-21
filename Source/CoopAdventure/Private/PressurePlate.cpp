@@ -36,14 +36,44 @@ void APressurePlate::BeginPlay()
 	Super::BeginPlay();
 	triggerMesh->SetVisibility(false);
 	triggerMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+	LastActor = nullptr;
+
+	triggerMesh->OnComponentBeginOverlap.AddDynamic(this, &APressurePlate::OnSphereBeginOverlap);
+	triggerMesh->OnComponentEndOverlap.AddDynamic(this, &APressurePlate::OnSphereEndOverlap);
 	
+}
+
+void APressurePlate::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!HasAuthority()) return;
+	if (LastActor == OtherActor) return;
+
+	if (OtherActor->ActorHasTag("Player"))
+	{
+		LastActor = OtherActor;
+		bIsActivated = true;
+		OnActivated.Broadcast();
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Activated");
+	}
+}
+
+void APressurePlate::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (!HasAuthority()) return;
+	if (OtherActor->ActorHasTag("Player"))
+	{
+		LastActor = nullptr;
+		bIsActivated = false;
+		OnDeactivated.Broadcast();
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Deactivated");
+	}
 }
 
 void APressurePlate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	/*if (HasAuthority())
 	{
 		AActor* overlappingActor = 0;
 		
@@ -75,6 +105,6 @@ void APressurePlate::Tick(float DeltaTime)
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Not Activated");
 			}
 		}
-	}
+	}*/
 }
 
