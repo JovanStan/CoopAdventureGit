@@ -46,6 +46,7 @@ private:
 
 	UPROPERTY()
 	AActor* LastActor;
+
 	
 public:
 	FORCEINLINE bool GetIsActivated() const { return bIsActivated; }
