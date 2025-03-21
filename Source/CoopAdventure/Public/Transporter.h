@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PressurePlate.h"
 #include "Components/ActorComponent.h"
 #include "Transporter.generated.h"
 
@@ -18,6 +19,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// functions that are bind to pressurePlate delegates
 	UFUNCTION()
 	void OnPressurePlateActivated();
 	UFUNCTION()
@@ -30,10 +32,15 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float moveTime;
-
 	UPROPERTY(EditAnywhere)
 	AActor* triggerActor;
 
-	UFUNCTION()
+	UPROPERTY()
+	APressurePlate* pressurePlate;
+
+	UPROPERTY()
+	AActor* owner;
+
+	UFUNCTION(BlueprintCallable)
 	void SetPoints(FVector point1, FVector point2);
 };
