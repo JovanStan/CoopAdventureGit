@@ -3,8 +3,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
+#include "CoopAdventure/CoopAdventureCharacter.h"
 #include "GameFramework/Actor.h"
 #include "CollectableKey.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateUI);
 
 UCLASS()
 class COOPADVENTURE_API ACollectableKey : public AActor
@@ -23,6 +26,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnUpdateUI OnUpdateUI;
+
 private:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta=(AllowPrivateAccess=true))
 	USceneComponent* root;
@@ -39,11 +45,20 @@ private:
 
 	UFUNCTION()
 	void OnRep_IsCollected();
-
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(AllowPrivateAccess=true))
 	float rotateSpeed;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(AllowPrivateAccess=true))
 	UAudioComponent* collectSound;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_UpdateUI();
+
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	ACoopAdventureCharacter* playerCharacter;
+
+public:
+	FORCEINLINE bool GetIsCollected() const { return bIsCollected; }
+	
 };
 

@@ -2,6 +2,7 @@
 #include "CollectableKey.h"
 
 #include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 ACollectableKey::ACollectableKey()
@@ -36,6 +37,10 @@ void ACollectableKey::BeginPlay()
 {
 	Super::BeginPlay();
 	capsule->OnComponentBeginOverlap.AddDynamic(this, &ACollectableKey::OnCapsuleBeginOverlap);
+
+	//Get reference to the player 
+	playerCharacter = Cast<ACoopAdventureCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), ACoopAdventureCharacter::StaticClass()));
+	
 }
 
 void ACollectableKey::Tick(float DeltaTime)
@@ -47,6 +52,8 @@ void ACollectableKey::Tick(float DeltaTime)
 		mesh->AddRelativeRotation(FRotator(0.f, rotateSpeed * DeltaTime, 0.f));
 	}
 
+	//FString keyCollectedStatus = bIsCollected ? "Collected" : "Not Collected";
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, keyCollectedStatus);
 }
 
 void ACollectableKey::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -63,8 +70,22 @@ void ACollectableKey::OnRep_IsCollected()
 	if (HasAuthority())
 	{
 		mesh->SetVisibility(false);
+		Multicast_UpdateUI();
 	}
 }
+
+void ACollectableKey::Multicast_UpdateUI_Implementation()
+{
+	/*if (playerCharacter && playerCharacter->GetHUDWidget() && playerCharacter->GetHUDWidget()->KeyCollectedText)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "CollectableKey::UpdateUI_Implementation");
+		
+		FText keyCollectedStatus = bIsCollected ? FText::FromString("Collected") : FText::FromString("Not Collected");
+		playerCharacter->GetHUDWidget()->KeyCollectedText->SetText(keyCollectedStatus);
+	}*/
+	OnUpdateUI.Broadcast();
+}
+
 
 void ACollectableKey::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

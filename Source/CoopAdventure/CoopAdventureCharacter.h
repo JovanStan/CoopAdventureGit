@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Widgets/PlayerHUD.h"
 #include "CoopAdventureCharacter.generated.h"
 
 class USpringArmComponent;
@@ -46,13 +47,11 @@ class ACoopAdventureCharacter : public ACharacter
 
 public:
 	ACoopAdventureCharacter();
-	
 
 protected:
-
+	virtual void BeginPlay() override;
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
-
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
@@ -68,5 +67,12 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UPlayerHUD> HUDWidgetClass;
+	UPROPERTY(BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UPlayerHUD* HUDWidget;
+	
 };
 
