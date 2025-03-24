@@ -180,9 +180,9 @@ void APlayerCharacter::ChangeCharacter()
 	CollisionParams.AddIgnoredActor(this);
 
 	FHitResult hitResult;
-	bool hasHit = GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_Visibility, CollisionParams);
+	bool hasHit = GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_Camera, CollisionParams);
 
-	if (hasHit && hitResult.GetActor()->ActorHasTag("Box"))
+	if (hasHit && hitResult.GetActor()->ActorHasTag("Player"))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Switching Character");
 	}
