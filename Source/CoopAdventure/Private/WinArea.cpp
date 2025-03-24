@@ -1,8 +1,8 @@
 
 #include "WinArea.h"
 
+#include "Characters/PlayerCharacter.h"
 #include "Components/BoxComponent.h"
-#include "CoopAdventure/CoopAdventureCharacter.h"
 
 AWinArea::AWinArea()
 {
@@ -30,7 +30,7 @@ void AWinArea::Tick(float DeltaTime)
 		if (!bWinCondition)
 		{
 			TArray<AActor*> overlappingActors;
-			winAreaBox->GetOverlappingActors(overlappingActors, ACoopAdventureCharacter::StaticClass());
+			winAreaBox->GetOverlappingActors(overlappingActors, APlayerCharacter::StaticClass());
 
 			bWinCondition = (overlappingActors.Num() == 2);
 			if (bWinCondition)

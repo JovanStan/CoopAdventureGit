@@ -39,7 +39,7 @@ void ACollectableKey::BeginPlay()
 	capsule->OnComponentBeginOverlap.AddDynamic(this, &ACollectableKey::OnCapsuleBeginOverlap);
 
 	//Get reference to the player 
-	playerCharacter = Cast<ACoopAdventureCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), ACoopAdventureCharacter::StaticClass()));
+	playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerCharacter::StaticClass()));
 	
 }
 

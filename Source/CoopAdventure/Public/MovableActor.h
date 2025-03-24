@@ -3,9 +3,10 @@
 
 #include "CoreMinimal.h"
 #include "Transporter.h"
-#include "CoopAdventure/CoopAdventureCharacter.h"
 #include "GameFramework/Actor.h"
 #include "MovableActor.generated.h"
+
+class UArrowComponent;
 
 UCLASS()
 class COOPADVENTURE_API AMovableActor : public AActor
@@ -20,7 +21,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* root;
 

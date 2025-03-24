@@ -2,8 +2,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/PlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
-#include "CoopAdventure/CoopAdventureCharacter.h"
 #include "GameFramework/Actor.h"
 #include "CollectableKey.generated.h"
 
@@ -55,7 +55,7 @@ private:
 	void Multicast_UpdateUI();
 
 	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
-	ACoopAdventureCharacter* playerCharacter;
+	APlayerCharacter* playerCharacter;
 
 public:
 	FORCEINLINE bool GetIsCollected() const { return bIsCollected; }
