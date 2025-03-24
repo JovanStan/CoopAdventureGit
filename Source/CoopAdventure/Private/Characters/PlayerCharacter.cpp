@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -21,9 +22,9 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 	
-	GetCharacterMovement()->JumpZVelocity = 700.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->JumpZVelocity = 550.f;
+	GetCharacterMovement()->AirControl = 0.15f;
+	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -31,7 +32,8 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 400.0f; 
-	SpringArm->bUsePawnControlRotation = true; 
+	SpringArm->bUsePawnControlRotation = true;
+	StartArmLength = SpringArm->TargetArmLength;
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName); 
@@ -43,7 +45,15 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CalculateHealthPercent();
+	
+	CollectableKey = Cast<ACollectableKey>(UGameplayStatics::GetActorOfClass(GetWorld(), ACollectableKey::StaticClass()));
+	if (CollectableKey)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Collectable Key");
+		CollectableKey->OnUpdateUI.AddDynamic(this, &APlayerCharacter::UpdateCollectedKeyUI);
+	}
 }
+
 void APlayerCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
@@ -61,7 +71,17 @@ void APlayerCharacter::NotifyControllerChanged()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CalculateHealthPercent();
+
+	if (SpringArm)
+	{
+		if (bIsSprinting)
+		{
+			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmLength, DeltaTime, ArmLengthInterpSpeed);
+		}else
+		{
+			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, StartArmLength, DeltaTime, ArmLengthInterpSpeed);
+		}
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -72,8 +92,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprinting);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprinting);
 	}
 }
 
@@ -110,5 +134,20 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void APlayerCharacter::StartSprinting()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Sprinting");
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	bIsSprinting = true;
+	
+}
+
+void APlayerCharacter::StopSprinting()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Stopped Sprinting");
+	GetCharacterMovement()->MaxWalkSpeed = 250.f;
+	bIsSprinting = false;
 }
 

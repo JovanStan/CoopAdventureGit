@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PlayerStatsComponent.h"
+#include "CollectableKey.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -28,6 +28,8 @@ protected:
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void StartSprinting();
+	void StopSprinting();
 	
 private:
 	// Components
@@ -47,11 +49,24 @@ private:
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	ACollectableKey* CollectableKey;
+	
+	//springting
+	bool bIsSprinting;
+	float StartArmLength;
+	float TargetArmLength = 500.f;
+	float ArmLengthInterpSpeed = 1.5f;
+		
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return SpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void CalculateHealthPercent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateCollectedKeyUI();
 };

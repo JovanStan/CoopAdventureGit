@@ -48,7 +48,7 @@ void APressurePlate::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	if (!HasAuthority()) return;
 	if (LastActor == OtherActor) return;
 
-	if (OtherActor->ActorHasTag("Player"))
+	if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("Box"))
 	{
 		LastActor = OtherActor;
 		bIsActivated = true;
@@ -72,39 +72,5 @@ void APressurePlate::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent
 void APressurePlate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*if (HasAuthority())
-	{
-		AActor* overlappingActor = 0;
-		
-		TArray<AActor*> overlappingActors;
-		triggerMesh->GetOverlappingActors(overlappingActors);
-
-		for (int i = 0; i < overlappingActors.Num(); i++)
-		{
-			if (overlappingActors[i]->ActorHasTag("Player"))
-			{
-				overlappingActor = overlappingActors[i];
-				break;
-			}
-		}
-		if (overlappingActor)
-		{
-			if (!bIsActivated)
-			{
-				bIsActivated = true;
-				OnActivated.Broadcast();
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Activated");
-			}
-		}else
-		{
-			if (bIsActivated)
-			{
-				bIsActivated = false;
-				OnDeactivated.Broadcast();
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Not Activated");
-			}
-		}
-	}*/
 }
 
