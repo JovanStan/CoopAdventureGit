@@ -57,26 +57,37 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeCharacterAction;
 	
-
+	// objects in the world
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ACollectableKey* CollectableKey;
 	
-	//springting
+	//sprinting
 	bool bIsSprinting;
+	
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
+	void InterpCameraIfRunning(float DeltaTime) const;
 
+	// camera switching
 	bool bIsFirstPerson;
 	void ToggleCameraView();
-	void ChangeCharacter();
+
+	// character switching
+	void ChangeCharacter() const;
 		
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return SpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+
+	//blueprint implementable events
 	UFUNCTION(BlueprintImplementableEvent)
 	void CalculateHealthPercent();
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateCollectedKeyUI();
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnableCrosshair();
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisableCrosshair();
 };

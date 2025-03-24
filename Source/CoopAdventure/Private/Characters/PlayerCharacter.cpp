@@ -46,6 +46,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CalculateHealthPercent();
+	DisableCrosshair();
 	
 	CollectableKey = Cast<ACollectableKey>(UGameplayStatics::GetActorOfClass(GetWorld(), ACollectableKey::StaticClass()));
 	if (CollectableKey)
@@ -73,16 +74,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*if (SpringArm)
-	{
-		if (bIsSprinting && !bIsFirstPerson)
-		{
-			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmLength, DeltaTime, ArmLengthInterpSpeed);
-		}else
-		{
-			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, StartArmLength, DeltaTime, ArmLengthInterpSpeed);
-		}
-	}*/
+	InterpCameraIfRunning(DeltaTime);
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -161,6 +153,7 @@ void APlayerCharacter::ToggleCameraView()
 		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 		GetMesh()->SetOwnerNoSee(true);
 		bIsFirstPerson = true;
+		EnableCrosshair();
 	}
 	else
 	{
@@ -169,10 +162,11 @@ void APlayerCharacter::ToggleCameraView()
 		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 		GetMesh()->SetOwnerNoSee(false);
 		bIsFirstPerson = false;
+		DisableCrosshair();
 	}
 }
 
-void APlayerCharacter::ChangeCharacter()
+void APlayerCharacter::ChangeCharacter() const
 {
 	FVector startLocation = FollowCamera->GetComponentLocation();
 	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
@@ -184,7 +178,31 @@ void APlayerCharacter::ChangeCharacter()
 
 	if (hasHit && hitResult.GetActor()->ActorHasTag("Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Switching Character");
+		APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(hitResult.GetActor());
+		if (HitCharacter)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			if (PlayerController)
+			{
+				PlayerController->Possess(HitCharacter);
+			}
+		}
+	}
+}
+
+void APlayerCharacter::InterpCameraIfRunning(float DeltaTime) const
+{
+	if (SpringArm)
+	{
+		if (bIsSprinting)
+		{
+			if (bIsFirstPerson) return;
+			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmLength, DeltaTime, ArmLengthInterpSpeed);
+		}else
+		{
+			if (bIsFirstPerson) return;
+			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, StartArmLength, DeltaTime, ArmLengthInterpSpeed);
+		}
 	}
 }
 
