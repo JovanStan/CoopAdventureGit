@@ -39,6 +39,7 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName); 
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	bIsFirstPerson = false;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -72,16 +73,16 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (SpringArm)
+	/*if (SpringArm)
 	{
-		if (bIsSprinting)
+		if (bIsSprinting && !bIsFirstPerson)
 		{
 			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmLength, DeltaTime, ArmLengthInterpSpeed);
 		}else
 		{
 			SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, StartArmLength, DeltaTime, ArmLengthInterpSpeed);
 		}
-	}
+	}*/
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -95,6 +96,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		EnhancedInputComponent->BindAction(ToggleCameraViewAction, ETriggerEvent::Completed, this, &APlayerCharacter::ToggleCameraView);
+		EnhancedInputComponent->BindAction(ChangeCharacterAction, ETriggerEvent::Completed, this, &APlayerCharacter::ChangeCharacter);
 		
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprinting);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprinting);
@@ -138,7 +141,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::StartSprinting()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Sprinting");
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	bIsSprinting = true;
 	
@@ -146,8 +148,43 @@ void APlayerCharacter::StartSprinting()
 
 void APlayerCharacter::StopSprinting()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Stopped Sprinting");
 	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 	bIsSprinting = false;
+}
+
+void APlayerCharacter::ToggleCameraView()
+{
+	if (!bIsFirstPerson)
+	{
+		SpringArm->TargetArmLength = 0.f;
+		SpringArm->SetRelativeLocation(FVector(10.0f, 0.0f, 70.0f)); 
+		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
+		GetMesh()->SetOwnerNoSee(true);
+		bIsFirstPerson = true;
+	}
+	else
+	{
+		SpringArm->TargetArmLength = StartArmLength;
+		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f)); 
+		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
+		GetMesh()->SetOwnerNoSee(false);
+		bIsFirstPerson = false;
+	}
+}
+
+void APlayerCharacter::ChangeCharacter()
+{
+	FVector startLocation = FollowCamera->GetComponentLocation();
+	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FHitResult hitResult;
+	bool hasHit = GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_Visibility, CollisionParams);
+
+	if (hasHit && hitResult.GetActor()->ActorHasTag("Box"))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "Switching Character");
+	}
 }
 

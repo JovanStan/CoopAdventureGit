@@ -30,6 +30,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void StartSprinting();
 	void StopSprinting();
+
 	
 private:
 	// Components
@@ -51,6 +52,11 @@ private:
 	UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* SprintAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ToggleCameraViewAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ChangeCharacterAction;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ACollectableKey* CollectableKey;
@@ -60,6 +66,10 @@ private:
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
+
+	bool bIsFirstPerson;
+	void ToggleCameraView();
+	void ChangeCharacter();
 		
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return SpringArm; }
