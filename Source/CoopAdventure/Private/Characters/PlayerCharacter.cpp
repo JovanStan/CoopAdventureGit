@@ -75,6 +75,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InterpCameraIfRunning(DeltaTime);
+
+	if (IsLocallyControlled())
+	{
+		ToggleCrosshair();
+	}
+}
+
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	ToggleCrosshair();
+}
+
+void APlayerCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+
+	DisableCrosshair();
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -153,7 +172,6 @@ void APlayerCharacter::ToggleCameraView()
 		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 		GetMesh()->SetOwnerNoSee(true);
 		bIsFirstPerson = true;
-		EnableCrosshair();
 	}
 	else
 	{
@@ -162,11 +180,11 @@ void APlayerCharacter::ToggleCameraView()
 		FollowCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 		GetMesh()->SetOwnerNoSee(false);
 		bIsFirstPerson = false;
-		DisableCrosshair();
 	}
 }
 
-void APlayerCharacter::ChangeCharacter() const
+
+void APlayerCharacter::ChangeCharacter()
 {
 	FVector startLocation = FollowCamera->GetComponentLocation();
 	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
@@ -178,15 +196,35 @@ void APlayerCharacter::ChangeCharacter() const
 
 	if (hasHit && hitResult.GetActor()->ActorHasTag("Player"))
 	{
-		APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(hitResult.GetActor());
-		if (HitCharacter)
+		PossesOtherCharacter(hitResult);
+	}
+}
+
+void APlayerCharacter::PossesOtherCharacter(FHitResult hitResult)
+{
+	APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(hitResult.GetActor());
+	if (HitCharacter)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
 		{
-			APlayerController* PlayerController = Cast<APlayerController>(GetController());
-			if (PlayerController)
-			{
-				PlayerController->Possess(HitCharacter);
-			}
+			PlayerController->Possess(HitCharacter);
+			GetCharacterMovement()->StopMovementImmediately();
+			GetCharacterMovement()->DisableMovement();
+			StopSprinting();
 		}
+	}
+}
+
+void APlayerCharacter::ToggleCrosshair()
+{
+	if (bIsFirstPerson)
+	{
+		EnableCrosshair();
+	}
+	else
+	{
+		DisableCrosshair();
 	}
 }
 

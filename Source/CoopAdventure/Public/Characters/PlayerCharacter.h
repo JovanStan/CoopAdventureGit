@@ -25,6 +25,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void NotifyControllerChanged() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -63,23 +65,21 @@ private:
 	
 	//sprinting
 	bool bIsSprinting;
+	bool bIsFirstPerson;
 	
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
+	
 	void InterpCameraIfRunning(float DeltaTime) const;
-
-	// camera switching
-	bool bIsFirstPerson;
 	void ToggleCameraView();
-
-	// character switching
-	void ChangeCharacter() const;
+	void PossesOtherCharacter(FHitResult hitResult);
+	void ChangeCharacter();
+	void ToggleCrosshair();
 		
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return SpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
 
 	//blueprint implementable events
 	UFUNCTION(BlueprintImplementableEvent)
@@ -90,4 +90,7 @@ public:
 	void EnableCrosshair();
 	UFUNCTION(BlueprintImplementableEvent)
 	void DisableCrosshair();
+
 };
+
+
