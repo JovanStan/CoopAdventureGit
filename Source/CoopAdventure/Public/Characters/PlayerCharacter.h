@@ -70,6 +70,9 @@ private:
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
+
+	FTimerHandle checkForPossessableCharacterTimer;
+	void CheckForPossessableCharacter();
 	
 	void InterpCameraIfRunning(float DeltaTime) const;
 	void ToggleCameraView();
@@ -96,5 +99,6 @@ public:
 	void HidePossesMessage();
 
 };
+
 
 

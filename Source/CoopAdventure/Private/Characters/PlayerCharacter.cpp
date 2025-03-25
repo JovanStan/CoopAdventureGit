@@ -48,6 +48,8 @@ void APlayerCharacter::BeginPlay()
 	CalculateHealthPercent();
 	DisableCrosshair();
 	
+	GetWorldTimerManager().SetTimer(checkForPossessableCharacterTimer, this, &APlayerCharacter::CheckForPossessableCharacter, .5f, true);
+	
 	CollectableKey = Cast<ACollectableKey>(UGameplayStatics::GetActorOfClass(GetWorld(), ACollectableKey::StaticClass()));
 	if (CollectableKey)
 	{
@@ -80,9 +82,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		ToggleCrosshair();
 	}
+}
 
+void APlayerCharacter::CheckForPossessableCharacter()
+{
 	FVector startLocation = FollowCamera->GetComponentLocation();
-	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
+	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 3000.f;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
@@ -94,11 +99,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 		if (hasHit && hitResult.GetActor()->ActorHasTag("Player"))
 		{
 			ShowPossesMessage();
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Hit");
 		}else
 		{
 			HidePossesMessage();
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Not Found");
 		}
 	}
 }
@@ -112,7 +115,6 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 void APlayerCharacter::UnPossessed()
 {
 	Super::UnPossessed();
-
 	DisableCrosshair();
 }
 
