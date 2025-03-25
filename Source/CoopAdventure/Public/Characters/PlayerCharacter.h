@@ -90,6 +90,10 @@ public:
 	void EnableCrosshair();
 	UFUNCTION(BlueprintImplementableEvent)
 	void DisableCrosshair();
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowPossesMessage();
+	UFUNCTION(BlueprintImplementableEvent)
+	void HidePossesMessage();
 
 };
 

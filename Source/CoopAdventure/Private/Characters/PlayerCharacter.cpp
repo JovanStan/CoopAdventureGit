@@ -80,12 +80,32 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		ToggleCrosshair();
 	}
+
+	FVector startLocation = FollowCamera->GetComponentLocation();
+	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FHitResult hitResult;
+	bool hasHit = GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_Camera, CollisionParams);
+
+	if (IsLocallyControlled())
+	{
+		if (hasHit && hitResult.GetActor()->ActorHasTag("Player"))
+		{
+			ShowPossesMessage();
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Hit");
+		}else
+		{
+			HidePossesMessage();
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Not Found");
+		}
+	}
 }
 
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
 	ToggleCrosshair();
 }
 
@@ -187,7 +207,7 @@ void APlayerCharacter::ToggleCameraView()
 void APlayerCharacter::ChangeCharacter()
 {
 	FVector startLocation = FollowCamera->GetComponentLocation();
-	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 1000.f;
+	FVector endLocation = startLocation + FollowCamera->GetForwardVector() * 3000.f;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
@@ -212,6 +232,7 @@ void APlayerCharacter::PossesOtherCharacter(FHitResult hitResult)
 			GetCharacterMovement()->StopMovementImmediately();
 			GetCharacterMovement()->DisableMovement();
 			StopSprinting();
+			HidePossesMessage();
 		}
 	}
 }
