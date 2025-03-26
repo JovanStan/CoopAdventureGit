@@ -32,6 +32,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void StartSprinting();
 	void StopSprinting();
+	void Pause();
 
 	
 private:
@@ -58,6 +59,8 @@ private:
 	UInputAction* ToggleCameraViewAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ChangeCharacterAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseAction;
 	
 	// objects in the world
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -70,6 +73,9 @@ private:
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	bool bIsGamePaused;
 
 	FTimerHandle checkForPossessableCharacterTimer;
 	void CheckForPossessableCharacter();
@@ -97,6 +103,10 @@ public:
 	void ShowPossesMessage();
 	UFUNCTION(BlueprintImplementableEvent)
 	void HidePossesMessage();
+	UFUNCTION(BlueprintImplementableEvent)
+	void PauseGame();
+	UFUNCTION(BlueprintImplementableEvent)
+	void UnPauseGame();
 
 };
 

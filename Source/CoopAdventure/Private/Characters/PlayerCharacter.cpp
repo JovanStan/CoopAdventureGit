@@ -131,6 +131,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		EnhancedInputComponent->BindAction(ToggleCameraViewAction, ETriggerEvent::Completed, this, &APlayerCharacter::ToggleCameraView);
 		EnhancedInputComponent->BindAction(ChangeCharacterAction, ETriggerEvent::Completed, this, &APlayerCharacter::ChangeCharacter);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Completed, this, &APlayerCharacter::Pause);
 		
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprinting);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprinting);
@@ -183,6 +184,33 @@ void APlayerCharacter::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 	bIsSprinting = false;
+}
+
+void APlayerCharacter::Pause()
+{
+	if (!bIsGamePaused)
+	{
+		bIsGamePaused = true;
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+		{
+			PlayerController->SetShowMouseCursor(true);
+			PlayerController->SetInputMode(FInputModeGameAndUI());
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+		}
+		PauseGame();
+	}else
+	{
+		bIsGamePaused = false;
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+		{
+			PlayerController->SetShowMouseCursor(false);
+			PlayerController->SetInputMode(FInputModeGameOnly());
+			UGameplayStatics::SetGamePaused(GetWorld(), false);
+		}
+		UnPauseGame();
+	}
 }
 
 void APlayerCharacter::ToggleCameraView()
