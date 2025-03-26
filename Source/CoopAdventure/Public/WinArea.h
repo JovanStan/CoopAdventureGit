@@ -30,7 +30,4 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	bool bWinCondition;
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastRPC_Win();
 };
