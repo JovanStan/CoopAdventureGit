@@ -40,6 +40,8 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	bIsFirstPerson = false;
+	bInvertX = false;
+	bInvertY = false;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -168,8 +170,22 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		if (bInvertX)
+		{
+			AddControllerYawInput(-LookAxisVector.X);
+		}
+		else
+		{
+			AddControllerYawInput(LookAxisVector.X);
+		}
+
+		if (bInvertY)
+		{
+			AddControllerPitchInput(-LookAxisVector.Y);
+		}else
+		{
+			AddControllerPitchInput(LookAxisVector.Y);
+		}
 	}
 }
 
