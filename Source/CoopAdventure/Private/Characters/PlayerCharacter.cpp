@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SaveSystem/BodySwapGameInstance.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -45,6 +46,20 @@ APlayerCharacter::APlayerCharacter()
 	sensitivity = 1.f;
 }
 
+void APlayerCharacter::NotifyControllerChanged()
+{
+	Super::NotifyControllerChanged();
+
+	// Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,19 +76,6 @@ void APlayerCharacter::BeginPlay()
 	}
 }
 
-void APlayerCharacter::NotifyControllerChanged()
-{
-	Super::NotifyControllerChanged();
-
-	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
-}
 
 void APlayerCharacter::Tick(float DeltaTime)
 {
@@ -167,6 +169,9 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	// load sensitivity settings from Game instance
+	sensitivity = Cast<UBodySwapGameInstance>(GetGameInstance())->MouseSensitivity;
 
 	if (Controller != nullptr)
 	{
