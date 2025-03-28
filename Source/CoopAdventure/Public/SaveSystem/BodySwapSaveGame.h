@@ -17,4 +17,8 @@ public:
 	float MouseSensitivity;
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	FVector PlayerLocation;
+	UPROPERTY(VisibleAnywhere, Category = "SaveData")
+	bool bInvertX;
+	UPROPERTY(VisibleAnywhere, Category = "SaveData")
+	bool bInvertY;
 };

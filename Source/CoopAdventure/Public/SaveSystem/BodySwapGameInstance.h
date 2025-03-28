@@ -26,11 +26,20 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveMouseSensitivity(float NewSensitivity);
+	UFUNCTION(BlueprintCallable)
+	void SaveInvertX(bool newInvertX);
+	UFUNCTION(BlueprintCallable)
+	void SaveInvertY(bool newInvertY);
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "SaveData")
 	float MouseSensitivity;
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	FVector PlayerLocation;
+	UPROPERTY(VisibleAnywhere, Category = "SaveData")
+	bool bInvertX;
+	UPROPERTY(VisibleAnywhere, Category = "SaveData")
+	bool bInvertY;
 
 	static bool DoesSaveExist();
 };
+

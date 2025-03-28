@@ -41,9 +41,6 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	bIsFirstPerson = false;
-	bInvertX = false;
-	bInvertY = false;
-	sensitivity = 1.f;
 }
 
 void APlayerCharacter::NotifyControllerChanged()
@@ -63,6 +60,7 @@ void APlayerCharacter::NotifyControllerChanged()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	bodySwapGameInstance = Cast<UBodySwapGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	CalculateHealthPercent();
 	DisableCrosshair();
 	
@@ -74,6 +72,10 @@ void APlayerCharacter::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, "Collectable Key");
 		CollectableKey->OnUpdateUI.AddDynamic(this, &APlayerCharacter::UpdateCollectedKeyUI);
 	}
+
+	// get saved state for invert X and Y
+	bInvertX = bodySwapGameInstance->bInvertX;
+	bInvertY = bodySwapGameInstance->bInvertY;
 }
 
 
@@ -171,7 +173,7 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	// load sensitivity settings from Game instance
-	sensitivity = Cast<UBodySwapGameInstance>(GetGameInstance())->MouseSensitivity;
+	sensitivity = bodySwapGameInstance->MouseSensitivity;
 
 	if (Controller != nullptr)
 	{

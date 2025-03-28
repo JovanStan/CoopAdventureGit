@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "CollectableKey.h"
 #include "GameFramework/Character.h"
+#include "SaveSystem/BodySwapGameInstance.h"
 #include "PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -33,6 +34,7 @@ protected:
 	void StartSprinting();
 	void StopSprinting();
 	void Pause();
+
 
 	
 private:
@@ -91,6 +93,9 @@ private:
 	void PossesOtherCharacter(FHitResult hitResult);
 	void ChangeCharacter();
 	void ToggleCrosshair();
+
+	UPROPERTY()
+	UBodySwapGameInstance* bodySwapGameInstance;
 		
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return SpringArm; }
