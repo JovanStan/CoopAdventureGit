@@ -42,6 +42,7 @@ APlayerCharacter::APlayerCharacter()
 	bIsFirstPerson = false;
 	bInvertX = false;
 	bInvertY = false;
+	sensitivity = 1.f;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -172,19 +173,19 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		if (bInvertX)
 		{
-			AddControllerYawInput(-LookAxisVector.X);
+			AddControllerYawInput(-LookAxisVector.X * sensitivity);
 		}
 		else
 		{
-			AddControllerYawInput(LookAxisVector.X);
+			AddControllerYawInput(LookAxisVector.X * sensitivity);
 		}
 
 		if (bInvertY)
 		{
-			AddControllerPitchInput(-LookAxisVector.Y);
+			AddControllerPitchInput(-LookAxisVector.Y * sensitivity);
 		}else
 		{
-			AddControllerPitchInput(LookAxisVector.Y);
+			AddControllerPitchInput(LookAxisVector.Y * sensitivity);
 		}
 	}
 }

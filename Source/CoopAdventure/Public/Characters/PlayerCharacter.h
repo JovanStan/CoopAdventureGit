@@ -73,12 +73,14 @@ private:
 	float StartArmLength;
 	float TargetArmLength = 500.f;
 	float ArmLengthInterpSpeed = 1.5f;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float sensitivity;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bInvertX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bInvertY;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bIsGamePaused;
 
 	FTimerHandle checkForPossessableCharacterTimer;
