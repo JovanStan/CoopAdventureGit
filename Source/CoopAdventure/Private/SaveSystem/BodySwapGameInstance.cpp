@@ -36,6 +36,9 @@ void UBodySwapGameInstance::SaveGame()
 	currentSaveGame->MouseSensitivity = MouseSensitivity;
 	currentSaveGame->bInvertX = bInvertX;
 	currentSaveGame->bInvertY = bInvertY;
+	currentSaveGame->MusicVolume = MusicVolume;
+	currentSaveGame->SfxVolume = SfxVolume;
+	currentSaveGame->VoiceVolume = VoiceVolume;
 
 	UGameplayStatics::SaveGameToSlot(currentSaveGame, "Save", 0);
 }
@@ -55,6 +58,9 @@ void UBodySwapGameInstance::LoadGame()
 			MouseSensitivity = currentSaveGame->MouseSensitivity;
 			bInvertX = currentSaveGame->bInvertX;
 			bInvertY = currentSaveGame->bInvertY;
+			MusicVolume = currentSaveGame->MusicVolume;
+			SfxVolume = currentSaveGame->SfxVolume;
+			VoiceVolume = currentSaveGame->VoiceVolume;
 		}
 	}
 }
@@ -87,6 +93,39 @@ void UBodySwapGameInstance::SaveInvertY(bool newInvertY)
 
 	bInvertY = newInvertY;
 	currentSaveGame->bInvertY = bInvertY;
+	UGameplayStatics::SaveGameToSlot(currentSaveGame, "Save", 0);
+}
+
+void UBodySwapGameInstance::SaveMusicVolume(float newMusicVolume)
+{
+	if (!currentSaveGame) LoadGame();  // Load the existing save file if needed
+	if (!currentSaveGame) return;  // Safety check
+
+	MusicVolume = newMusicVolume;
+	currentSaveGame->MusicVolume = MusicVolume;
+
+	UGameplayStatics::SaveGameToSlot(currentSaveGame, "Save", 0);
+}
+
+void UBodySwapGameInstance::SaveSfxVolume(float newSfxVolume)
+{
+	if (!currentSaveGame) LoadGame();  // Load the existing save file if needed
+	if (!currentSaveGame) return;  // Safety check
+
+	SfxVolume = newSfxVolume;
+	currentSaveGame->SfxVolume = SfxVolume;
+
+	UGameplayStatics::SaveGameToSlot(currentSaveGame, "Save", 0);
+}
+
+void UBodySwapGameInstance::SaveVoiceVolume(float newVoiceVolume)
+{
+	if (!currentSaveGame) LoadGame();  // Load the existing save file if needed
+	if (!currentSaveGame) return;  // Safety check
+
+	VoiceVolume = newVoiceVolume;
+	currentSaveGame->VoiceVolume = VoiceVolume;
+
 	UGameplayStatics::SaveGameToSlot(currentSaveGame, "Save", 0);
 }
 

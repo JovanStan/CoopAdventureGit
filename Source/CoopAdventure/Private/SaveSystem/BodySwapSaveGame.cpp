@@ -7,4 +7,7 @@ UBodySwapSaveGame::UBodySwapSaveGame()
 	PlayerLocation = FVector::ZeroVector;
 	bInvertX = false;
 	bInvertY = false;
+	MusicVolume = .5f;
+	SfxVolume = .5f;
+	VoiceVolume = .5f;
 }

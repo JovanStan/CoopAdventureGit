@@ -21,4 +21,10 @@ public:
 	bool bInvertX;
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	bool bInvertY;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "SaveData")
+	float MusicVolume;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "SaveData")
+	float SfxVolume;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "SaveData")
+	float VoiceVolume;
 };
