@@ -14,6 +14,10 @@ AItem::AItem()
 	sphere = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
 	sphere->SetupAttachment(root);
 	sphere->SetCollisionResponseToAllChannels(ECR_Overlap);
+
+	infoWidget = CreateDefaultSubobject<UWidgetComponent>("Info");
+	infoWidget->SetupAttachment(root);
+	infoWidget->SetVisibility(false);
 }
 
 void AItem::BeginPlay()
@@ -36,6 +40,7 @@ void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (interactable)
 	{
 		interactable->SetOverlappingItem(this);
+		infoWidget->SetVisibility(true);
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Player character entered");
 	}
 }
@@ -46,6 +51,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (interactable)
 	{
 		interactable->SetOverlappingItem(nullptr);
+		infoWidget->SetVisibility(false);
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Player character left");
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/InteractableInterface.h"
 #include "Item.generated.h"
@@ -31,6 +32,8 @@ private:
 	UStaticMeshComponent* mesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* sphere;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* infoWidget;
 
 public:
 	FORCEINLINE USphereComponent* GetSphere() const { return sphere; }
