@@ -89,6 +89,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		ToggleCrosshair();
 	}
+	
 }
 
 void APlayerCharacter::CheckForPossessableCharacter()
@@ -139,6 +140,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(ToggleCameraViewAction, ETriggerEvent::Completed, this, &APlayerCharacter::ToggleCameraView);
 		EnhancedInputComponent->BindAction(ChangeCharacterAction, ETriggerEvent::Completed, this, &APlayerCharacter::ChangeCharacter);
 		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Completed, this, &APlayerCharacter::Pause);
+		EnhancedInputComponent->BindAction(PickupAction, ETriggerEvent::Completed, this, &APlayerCharacter::EKeyPressed);
 		
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayerCharacter::StartSprinting);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopSprinting);
@@ -234,6 +236,34 @@ void APlayerCharacter::Pause()
 			UGameplayStatics::SetGamePaused(GetWorld(), false);
 		}
 		UnPauseGame();
+	}
+}
+
+void APlayerCharacter::SetOverlappingItem(class AItem* item)
+{
+	OverlappingItem = item;
+}
+
+
+void APlayerCharacter::EKeyPressed()
+{
+	if (OverlappingItem && !ItemInHand)
+	{
+		ItemInHand = OverlappingItem;
+		OverlappingItem->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		OverlappingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandSocket");
+		OverlappingItem->GetSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		OverlappingItem = nullptr;
+
+	}else if (ItemInHand)
+	{
+		ItemInHand->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		ItemInHand->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		ItemInHand->GetSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		//ItemInHand->GetMesh()->WakeAllRigidBodies();
+		//ItemInHand->GetMesh()->AddImpulse(FVector(0, 0, -50), NAME_None, true);
+		ItemInHand = nullptr;
 	}
 }
 

@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "CollectableKey.h"
 #include "GameFramework/Character.h"
+#include "Items/Item.h"
 #include "SaveSystem/BodySwapGameInstance.h"
 #include "PlayerCharacter.generated.h"
 
@@ -14,13 +15,14 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class COOPADVENTURE_API APlayerCharacter : public ACharacter
+class COOPADVENTURE_API APlayerCharacter : public ACharacter, public IInteractableInterface
 {
 	GENERATED_BODY()
 
 public:
 	APlayerCharacter();
 	virtual void Tick(float DeltaTime) override;
+	virtual void SetOverlappingItem(class AItem* item) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,6 +36,7 @@ protected:
 	void StartSprinting();
 	void StopSprinting();
 	void Pause();
+	void EKeyPressed();
 
 
 	
@@ -63,14 +66,21 @@ private:
 	UInputAction* ChangeCharacterAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* PauseAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PickupAction;
 	
 	// objects in the world
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ACollectableKey* CollectableKey;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	AItem* OverlappingItem;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	AItem* ItemInHand;
 	
 	//sprinting
 	bool bIsSprinting;
 	bool bIsFirstPerson;
+
 	
 	float StartArmLength;
 	float TargetArmLength = 500.f;
